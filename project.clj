@@ -4,6 +4,7 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :aot :all
+  :main appengy.AppengySimple
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [appengy "0.1.5"]
                  [org.clojure/tools.cli "0.2.2"]
