@@ -1,4 +1,4 @@
-(defproject appengy-simple "0.1.5"
+(defproject appengy-simple "0.1.6"
   :description "Simple appengy server"
   :url "http://github.com/galdolber/appengy-simple"
   :license {:name "Eclipse Public License"

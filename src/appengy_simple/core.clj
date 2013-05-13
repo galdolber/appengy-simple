@@ -10,6 +10,7 @@
         [clojure.tools.cli :only [cli]]
         [clojure.java.shell :only [sh]]
         [ring.util.response :only [header]]
+        appengy-simple.gzip
         ring.middleware.cookies
         ring.middleware.session
         ring.middleware.reload
@@ -68,7 +69,8 @@
          wrap-params
          wrap-multipart-params
          wrap-reload
-         wrap-cache-headers)
+         wrap-cache-headers
+         wrap-gzip)
      {:port port}))
   (def apps-server (make-server apps-port apps-handler)))
 
