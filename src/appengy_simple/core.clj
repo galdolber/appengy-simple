@@ -24,7 +24,9 @@
 (defn add-cache-headers [res path]
   (cond
    (.contains ^String path ".cache.")
-     (header res "Expires" (.format cache-format (+ (.getTime ^Date (Date.)) 31536000000N)))
+     (-> res 
+         (header "Cache-control" "public, max-age=691200")
+         (header "Expires" (.format cache-format (+ (.getTime ^Date (Date.)) 31536000000N))))
    (.contains ^String path ".nocache.")
      (-> res
        (header "Pragma" "no-cache")
