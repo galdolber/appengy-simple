@@ -3,10 +3,12 @@
    :name appengy.AppengySimple)
   (:import [java.io File]
            [java.text SimpleDateFormat]
-           [java.util Date])
+           [java.util Date]
+           [appengy.socket Handler])
   (:require [org.httpkit.server :as http])
-  (:use [appengy.httpkit :only [apps-handler clients-handler]]
+  (:use [appengy.httpkit :only [clients-handler app-conn]]
         [appengy.socket :only [make-server]]
+        [appengy.server :only [close-app open-app app-message]]
         [clojure.tools.cli :only [cli]]
         [clojure.java.shell :only [sh]]
         [ring.util.response :only [header]]
@@ -24,7 +26,7 @@
 (defn add-cache-headers [res path]
   (cond
    (.contains ^String path ".cache.")
-     (-> res 
+     (-> res
          (header "Cache-control" "public, max-age=691200")
          (header "Expires" (.format cache-format (+ (.getTime ^Date (Date.)) 31536000000N))))
    (.contains ^String path ".nocache.")
@@ -60,6 +62,22 @@
       (sh "kill" "-9" p)
       (catch Exception e nil)))
   (spit pid-path (pid)))
+
+(def apps-handler
+  (reify Handler
+    (on-open [this info sendfn sess]
+             (when-not (= (:host info) "localhost")
+               :close))
+    (on-close [this info sendfn sess]
+              (when-let [host (:host @sess)]
+                (close-app host)))
+    (on-message [this info sendfn sess data]
+                (case (:cmd data)
+                  :open (do
+                          (swap! sess assoc :host (:host data))
+                          (open-app (app-conn sess sendfn) (:statics data)))
+                  (app-message data)))
+    (on-error [this info sendfn sess ex] (.printStackTrace ex))))
 
 (defn start [port apps-port]
   (def ws
