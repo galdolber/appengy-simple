@@ -70,12 +70,13 @@
                :close))
     (on-close [this info sendfn sess]
               (when-let [host (:host @sess)]
-                (close-app host)))
+                (when-not (:shutdown @sess)
+                  (close-app host))))
     (on-message [this info sendfn sess data]
                 (case (:cmd data)
                   :open (do
                           (swap! sess assoc :host (:host data))
-                          (open-app (app-conn sess sendfn) (:statics data)))
+                          (open-app (app-conn sess sendfn) (:statics data) sess))
                   (app-message data)))
     (on-error [this info sendfn sess ex] (.printStackTrace ex))))
 
