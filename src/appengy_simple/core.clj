@@ -92,7 +92,8 @@
          wrap-reload
          wrap-cache-headers
          wrap-gzip)
-     {:port port}))
+     {:port port
+      :thread 16}))
   (def apps-server (make-server apps-port apps-handler)))
 
 (defn -main [& args]
